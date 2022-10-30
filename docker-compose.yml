@@ -1,0 +1,48 @@
+version: "3.9"
+
+services:
+  veloce:
+    container_name: Veloce
+    build:
+      context: .
+      dockerfile: Docker/Veloce/Dockerfile
+    ports:
+      - 8000:8000
+    env_file:
+      - .env
+  
+  prometheus:
+    container_name: Veloce-Prometheus
+    build:
+      context: .
+      dockerfile: Docker/Prometheus/Dockerfile
+    ports:
+      - 9090:9090
+    depends_on:
+      - veloce
+
+  grafana:
+    container_name: Veloce-Grafana
+    image: grafana/grafana-enterprise:latest
+    ports:
+      - 3000:3000
+    depends_on:
+      - prometheus
+      - veloce
+    volumes:
+      - grafana_volume:/var/lib/grafana
+
+  redis:
+    container_name: Veloce-Redis
+    image: redis:latest
+    ports:
+      - 6379:6379
+    volumes:
+      - redis_volume:/data
+    command: redis-server --save 60 1 --loglevel warning
+    depends_on:
+      - veloce
+
+volumes:
+  grafana_volume:
+  redis_volume:
