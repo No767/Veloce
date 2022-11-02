@@ -10,6 +10,10 @@ from rest_framework.views import APIView
 
 
 class GetAllCommands(mixins.ListModelMixin, generics.GenericAPIView):
+    """
+    Gets all of the commands available in Rin
+    """
+
     queryset = RinCommands.objects.all()
     serializer_class = RinCommandsSerializer
 
@@ -20,6 +24,10 @@ class GetAllCommands(mixins.ListModelMixin, generics.GenericAPIView):
 
 
 class GetModuleCommands(APIView):
+    """
+    Get each command that a module/cog has
+    """
+
     def get_object(self, cog: str):
         try:
             return RinCommands.objects.filter(cog=cog)
@@ -35,6 +43,10 @@ class GetModuleCommands(APIView):
 
 
 class GetAllModules(APIView):
+    """
+    Returns a list of all of the cogs that Rin has
+    """
+
     @method_decorator(vary_on_cookie)
     @method_decorator(cache_page(60 * 60))
     def get(self, request):
